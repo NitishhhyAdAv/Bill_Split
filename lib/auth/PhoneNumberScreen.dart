@@ -53,7 +53,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
   void navigateToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 

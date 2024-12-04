@@ -43,7 +43,7 @@ class _OtpScreenState extends State<OtpScreen> {
   void navigateToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 
