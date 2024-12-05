@@ -59,12 +59,12 @@ class HomePage extends StatelessWidget {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
+                image: const DecorationImage(
                   image: AssetImage('assets/images/splitwise_logo.png'),
                   fit: BoxFit.cover,
                 ),
                 border: Border.all(color: Colors.white, width: 5),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black38,
                     blurRadius: 10,
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PhoneNumberScreen()),
+                        builder: (context) =>const PhoneNumberScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

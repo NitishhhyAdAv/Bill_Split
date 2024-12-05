@@ -4,14 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class PhoneNumberScreen extends StatefulWidget {
+  const PhoneNumberScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _PhoneNumberScreenState createState() => _PhoneNumberScreenState();
 }
 
 class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
   final TextEditingController phoneController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  bool isLoading = false; 
   void sendOTP() async {
     String phone = phoneController.text.trim();
 
@@ -20,11 +23,14 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
       return;
     }
 
+    setState(() {
+      isLoading = true; 
+    });
+
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phone,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto sign-in for supported platforms
           await _auth.signInWithCredential(credential);
           navigateToHome();
         },
@@ -32,6 +38,9 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
           showSnackbar('Verification failed: ${e.message}');
         },
         codeSent: (String verId, int? resendToken) {
+          setState(() {
+            isLoading = false; 
+          });
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -39,15 +48,23 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
             ),
           );
         },
-        codeAutoRetrievalTimeout: (String verId) {},
+        codeAutoRetrievalTimeout: (String verId) {
+          setState(() {
+            isLoading = false; 
+          });
+        },
       );
     } catch (e) {
+      setState(() {
+        isLoading = false; 
+      });
       showSnackbar('Error: $e');
     }
   }
 
   void showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void navigateToHome() {
@@ -80,10 +97,12 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: sendOTP,
-              child: const Text('Send OTP'),
-            ),
+            isLoading
+                ? const CircularProgressIndicator() 
+                : ElevatedButton(
+                    onPressed: sendOTP,
+                    child: const Text('Send OTP'),
+                  ),
           ],
         ),
       ),

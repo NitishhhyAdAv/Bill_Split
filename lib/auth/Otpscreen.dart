@@ -14,6 +14,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController otpController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool isLoading = false;  
 
   void verifyOtp() async {
     String otp = otpController.text.trim();
@@ -22,6 +23,10 @@ class _OtpScreenState extends State<OtpScreen> {
       showSnackbar('Enter a valid 6-digit OTP');
       return;
     }
+
+    setState(() {
+      isLoading = true;  
+    });
 
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -32,6 +37,9 @@ class _OtpScreenState extends State<OtpScreen> {
       await _auth.signInWithCredential(credential);
       navigateToHome();
     } catch (e) {
+      setState(() {
+        isLoading = false; 
+      });
       showSnackbar('Invalid OTP: $e');
     }
   }
@@ -43,7 +51,7 @@ class _OtpScreenState extends State<OtpScreen> {
   void navigateToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
   }
 
@@ -70,10 +78,12 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: verifyOtp,
-              child: const Text('Verify OTP'),
-            ),
+            isLoading
+                ? const CircularProgressIndicator() 
+                : ElevatedButton(
+                    onPressed: verifyOtp,
+                    child: const Text('Verify OTP'),
+                  ),
           ],
         ),
       ),
